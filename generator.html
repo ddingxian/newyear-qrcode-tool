@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>能研院新年祝福二维码生成器</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #ff6b6b 0%, #ffd93d 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+        }
+
+        h1 {
+            color: #d40000;
+            margin-bottom: 30px;
+            font-size: 24px;
+        }
+
+        .input-group {
+            margin-bottom: 30px;
+        }
+
+        label {
+            display: block;
+            text-align: left;
+            margin-bottom: 10px;
+            color: #333;
+            font-weight: bold;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 15px;
+            font-size: 18px;
+            border: 2px solid #ffd93d;
+            border-radius: 10px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus {
+            border-color: #ff6b6b;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        button {
+            flex: 1;
+            padding: 15px;
+            font-size: 16px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+        }
+
+        .generate-btn {
+            background: #ff6b6b;
+            color: white;
+        }
+
+        .generate-btn:hover {
+            background: #ff5252;
+            transform: translateY(-2px);
+        }
+
+        .download-btn {
+            background: #4CAF50;
+            color: white;
+            display: none;
+        }
+
+        .download-btn:hover {
+            background: #45a049;
+            transform: translateY(-2px);
+        }
+
+        .download-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        #qrcode {
+            margin: 30px auto;
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 10px;
+            display: inline-block;
+            display: none;
+        }
+
+        .tips {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
+            text-align: left;
+            font-size: 14px;
+            color: #856404;
+        }
+
+        .preview-link {
+            background: #e8f4f8;
+            border: 1px solid #4da6ff;
+            border-radius: 8px;
+            padding: 10px;
+            margin-top: 15px;
+            font-size: 12px;
+            color: #0066cc;
+            word-break: break-all;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎊 能研院新年祝福二维码生成器 🎊</h1>
+        
+        <div class="input-group">
+            <label for="nameInput">请输入接收人姓名：</label>
+            <input type="text" id="nameInput" placeholder="例如：张主任、李主任等">
+        </div>
+
+        <div class="button-group">
+            <button class="generate-btn" onclick="generateQRCode()">生成二维码</button>
+            <button class="download-btn" id="downloadBtn" onclick="downloadQRCode()">下载二维码</button>
+        </div>
+
+        <div id="qrcode"></div>
+
+        <div class="preview-link" id="previewLink">
+            <strong>预览链接：</strong><br>
+            <a href=" " target="_blank" id="previewUrl"></a >
+        </div>
+
+        <div class="tips">
+            <strong>使用说明：</strong><br>
+            1. 输入接收人姓名（如：张主任）<br>
+            2. 点击"生成二维码"<br>
+            3. 点击"下载二维码"保存图片<br>
+            4. 将二维码发送给对应的人<br>
+            5. 扫码后即可查看个性化祝福动画
+        </div>
+    </div>
+
+    <script>
+        let qrcodeInstance = null;
+
+        function generateQRCode() {
+            const name = document.getElementById('nameInput').value.trim();
+            
+            if (!name) {
+                alert('请输入姓名！');
+                return;
+            }
+
+            // 获取当前页面的基础URL
+            const baseUrl = window.location.origin + window.location.pathname.replace('/generator.html', '');
+            
+            // 生成带参数的动画页面URL
+            const animationUrl = `${baseUrl}/newyear.html?name=${encodeURIComponent(name)}`;
+            
+            // 清除之前的二维码
+            const qrcodeDiv = document.getElementById('qrcode');
+            qrcodeDiv.innerHTML = '';
+            qrcodeDiv.style.display = 'block';
+            
+            // 生成新二维码
+            qrcodeInstance = new QRCode(qrcodeDiv, {
+                text: animationUrl,
+                width: 256,
+                height: 256,
+                colorDark: '#d40000',
+                colorLight: '#ffffff',
+                correctLevel: QRCode.CorrectLevel.H
+            });
+
+            // 显示下载按钮
+            document.getElementById('downloadBtn').style.display = 'block';
+            
+            // 显示预览链接
+            const previewLink = document.getElementById('previewLink');
+            const previewUrl = document.getElementById('previewUrl');
+            previewLink.style.display = 'block';
+            previewUrl.href = animationUrl;
+            previewUrl.textContent = animationUrl;
+        }
+
+        function downloadQRCode() {
+            if (!qrcodeInstance) {
+                alert('请先生成二维码！');
+                return;
+            }
+
+            const canvas = document.querySelector('#qrcode canvas');
+            if (canvas) {
+                const url = canvas.toDataURL('image/png');
+                const link = document.createElement('a');
+                link.download = `新年祝福二维码_${document.getElementById('nameInput').value.trim()}.png`;
+                link.href = url;
+                link.click();
+            } else {
+                alert('二维码生成中，请稍后再试！');
+            }
+        }
+
+        // 回车键生成二维码
+        document.getElementById('nameInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                generateQRCode();
+            }
+        });
+    </script>
+</body>
+</html>
